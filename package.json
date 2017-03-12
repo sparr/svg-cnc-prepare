@@ -1,0 +1,21 @@
+{
+  "name": "svg-cnc-prepare",
+  "version": "0.0.1",
+  "description": "Tools for preparing SVG drawings for CNC laser/mill cutting",
+  "main": "optimize.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "svg",
+    "cnc",
+    "cli"
+  ],
+  "author": "sparr",
+  "license": "MIT",
+  "dependencies": {
+    "jsdom": "^9.11.0",
+    "snapsvg": "^0.5.1",
+    "xmlserializer": "^0.6.0"
+  }
+}
