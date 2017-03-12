@@ -3,6 +3,10 @@
 const xmlserializer = require('xmlserializer');
 const fs = require('fs');
 
+const optimizeElements = [
+  "circle", "ellipse", "line", "path", "polygon", "polyline", "rect"
+];
+
 // const Snap = require('snapsvg');
 const jsdom = require('jsdom');
 jsdom.env('', ['node_modules/snapsvg/dist/snap.svg.js'], (error, window) => {
@@ -15,24 +19,35 @@ var input = fs.readFileSync('test.svg','utf8');
 var snapthing = Snap.parse(input);
 
 //ORIGINALPSEUDOCODE ungroup everything
+// promote all the elements to be optimized to the top level, preserving their order
 function ungroup_recurse(elem) {
-  for (var index = 0; index < elem.children.length; index++) {
-    var child = elem.children[index];
+  for (var elemIndex = 0; elemIndex < elem.children.length; elemIndex++) {
+    var child = elem.children[elemIndex];
     ungroup_recurse(child);
-    if (child.tagName == 'g') {
+    if (child.children.length > 0) {
       var nextElement = child.nextSibling;
-      while (child.children.length > 0) {
-        elem.insertBefore(child.children[0], nextElement);
-        index++;
+      for (var childIndex = 0; childIndex < child.children.length; childIndex++) {
+        if (optimizeElements.includes(child.children[childIndex].tagName)) {
+          elem.insertBefore(child.children[childIndex], nextElement);
+          childIndex--;
+          elemIndex++;
+        }
       }
-      child.remove();
-      index--;
+      if (child.children.length == 0) {
+        child.remove();
+        elemIndex--;
+      }
     }
   }
 }
-ungroup_recurse(snapthing.node);
+ungroup_recurse(snapthing.node.children[0]);
 
-//ORIGINALPSEUDOCODE calculate modified Delaunay triangulation of elements
+//ORIGINALPSEUDOCODE TODO calculate modified Delaunay triangulation of elements
+
+
+// Basic shapes
+// <circle>, <ellipse>, <line>, <polygon>, <polyline>, <rect>
+
 //ORIGINALPSEUDOCODE for every element
 //ORIGINALPSEUDOCODE   for every neighbor
 //ORIGINALPSEUDOCODE     split element at its closest point to neighbor
